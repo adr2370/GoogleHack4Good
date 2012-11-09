@@ -226,7 +226,7 @@ class PhotoUploadFormHandler(webapp2.RequestHandler):
         upload_url = blobstore.create_upload_url('/upload')
         self.response.out.write('<html><body>');
         self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
-        self.response.out.write('''Upload File: <input type="file" name="file"><br> <input type="submit"
+        self.response.out.write('''Upload File: <input type="text" name="name"><input type="file" name="file"><br> <input type="submit"
         name="submit" value="Submit"> </form></body></html>''')
  
 class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):

@@ -78,7 +78,7 @@ will be banned from entering the ground."""
    
    draw = ImageDraw.Draw(background)
    draw.text( offsetBannerText ,"THIS IS YOUR ELECTRONIC TICKET. DUPLICATION PROHIBITED",
-             (255,255,255),medianfont)
+             (255,255,255),font=font)
    draw.text( offsetPleasePrint,"""PLEASE PRINT THIS PAGE AND BRING IT WITH YOU FOR ENTRANCE TO"""
               """ASHA STANDFORD HOLI 2012""",
              (0,0,0),smallfont)

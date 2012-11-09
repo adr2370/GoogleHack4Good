@@ -32,8 +32,9 @@ def generate(codeNum, date, imageName = "template2"):
    tinyfont = ImageFont.truetype("DejaVuSans.ttf",15)
    medianfont = ImageFont.truetype("DejaVuSans.ttf",40)
    img_w,img_h=img.size
-#   img = img.resize((img_w*2, img_h*2))
-   background = Image.open(main.PhotoObtainer.get(imageName))
+   img = img.resize((img_w*2, img_h*2))
+   fileImg = StringIO.StringIO(main.PhotoObtainer.get(imageName))
+   background = Image.open(fileImg)
    background.resize((1440, 900));
    #background = Image.new('RGBA', (1440,900), (255, 255, 255, 255))
    bg_w,bg_h=background.size
@@ -77,7 +78,7 @@ will be banned from entering the ground."""
    
    draw = ImageDraw.Draw(background)
    draw.text( offsetBannerText ,"THIS IS YOUR ELECTRONIC TICKET. DUPLICATION PROHIBITED",
-             (255,255,255),font=font)
+             (255,255,255),medianfont)
    draw.text( offsetPleasePrint,"""PLEASE PRINT THIS PAGE AND BRING IT WITH YOU FOR ENTRANCE TO"""
               """ASHA STANDFORD HOLI 2012""",
              (0,0,0),smallfont)

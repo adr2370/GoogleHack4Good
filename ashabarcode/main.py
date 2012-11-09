@@ -30,7 +30,7 @@ import barcode
 
 class Ticket(db.Model):
     email = db.EmailProperty()
-    used = db.BooleanProperty()
+    activated = db.BooleanProperty()
     time = db.DateTimeProperty()
 
 class TicketCheckingHandler(webapp2.RequestHandler):
@@ -45,8 +45,8 @@ class TicketCheckingHandler(webapp2.RequestHandler):
             # empty query
             self.response.out.write('1')
 
-        elif not ticket.used:
-            ticket.used = True
+        elif not ticket.activated:
+            ticket.activated = True
             ticket.time = datetime.datetime.now()
             ticket.put()
             self.response.out.write('0')
@@ -67,7 +67,7 @@ class MainHandler(webapp2.RequestHandler):
         for ticket in tickets:
             self.response.write(
                     '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
-                    (ticket.email, ticket.key().name(), ticket.used, ticket.time))
+                    (ticket.email, ticket.key().name(), ticket.activated, ticket.time))
         self.response.write('</table>')
 
         self.response.out.write("""<html><body>
@@ -78,17 +78,7 @@ class MainHandler(webapp2.RequestHandler):
         ">
  Background picture: <input type="file" name="picture">
  <hr>
- Custom text blurb:
- <br>
- Top Text: <textarea name="blurb_top" style="
- width: inherit;
- "></textarea>
- <br>
- Middle Text: <textarea name="blurb_mid" style="
- width: inherit;
- "></textarea>
- <br>
- Bottom Text: <textarea name="blurb_bot" style="
+ Custom text blurb: <textarea name="blurb" style="
  width: inherit;
  "></textarea>
  <hr>
@@ -169,7 +159,7 @@ class TicketHandler(webapp2.RequestHandler):
                 ticketNum = ticketNum*10**mm+m
         return ticketNum
 
-    def sendEmail(self, email, ticketNum): 
+    def sendEmail(self, email, ticketNum, blurb): 
         if not mail.is_email_valid(email): 
             self.response.write("<html><body>hello</body></html>")
             #prompt user to enter a valid address
@@ -192,7 +182,7 @@ class TicketHandler(webapp2.RequestHandler):
             """
 
             # Generate image string
-            x = barcode.generate(ticketNum, "asdf")
+            x = barcode.generate(ticketNum, blurb)
             output = StringIO.StringIO()
             x.save(output, "PNG")
             message.attachments = [('ticket.png', output.getvalue())]
@@ -207,20 +197,23 @@ class TicketHandler(webapp2.RequestHandler):
         rand = cgi.escape(self.request.get('checkRandom'))
         numTickets = int(cgi.escape(self.request.get('numTic')))
         email = cgi.escape(self.request.get('email'))
+        blurb = cgi.escape(self.request.get('blurb'))
 
         #seat numbers not implemented
         for i in range (numTickets):
             ticketNum = str(self.genTicketNum(numDigits,leading,trailing,rand))
-            Ticket(key_name=ticketNum, email=email, used=False).put()
-            self.sendEmail(email, ticketNum)
+            Ticket(key_name=ticketNum, email=email, activated=False).put()
+            self.sendEmail(email, ticketNum, blurb)
 
-        self.response.write("<html><body>hello</body></html>")
         self.response.out.write("""
             <html><body>Your ticket request has been approved.<br>
             Please check your email for a printable ticket. <br>
             Thank you. 
+            <form action="/" method="GET">
+            <input type="submit" value="Back">
+            </form>
+            </body></html>
             """)
-        self.response.out.write("</body></html>")
 
 ######################################################################
 ## Photo uploader and retriever begin

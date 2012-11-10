@@ -75,6 +75,7 @@ class MainHandler(webapp2.RequestHandler):
 
         self.response.out.write("""
         </select>
+        <a href="/background">Upload picture</a>
  <hr>
  Custom text blurb: <textarea name="blurb" style="
  width: inherit;
@@ -147,7 +148,7 @@ class TicketHandler(webapp2.RequestHandler):
                     ticket.key().name().startswith(leading) and 
                     ticket.key().name().endswith(trailing)
                     and len(ticket.key().name()) == p]
-            if tickets:
+            if ticket_nums:
                 ticketNum = max(ticket_nums) + 10 ** mm
             else:
                 ticketNum = n

@@ -69,25 +69,52 @@ class MainHandler(webapp2.RequestHandler):
         self.response.write('</table>')
 
         self.response.out.write("""<html><body>
-        <form action="/add" method="post">
-        Background picture: <input type="file" name="picture">
-        <hr>
-        Custom text blurb:
-        <br>
-        Top: <input name="blurb_top">
-        <br>
-        Mid: <input name="blurb_mid">
-        <br>
-        Bot: <input name="blurb_bot">
-        <hr>
-        Ticket category: <input name="ticket_category">
-        <hr>
-        Ticket number format: <input name="ticket_format">
-        <hr>
-        Number of tickets to be generated: <input name="num_tickets">
-        <hr>
-        Email address to which tickets should be sent: <input name="email">
-        <input type="submit" value="Submit"></form>
+        <form action="/sign" method="get" style="
+width: 400px;
+margin-left: auto;
+margin-right: auto;
+">
+Background picture: <input type="file" name="picture">
+<hr>
+Custom text blurb:
+<br>
+Top: <textarea name="blurb_top" style="
+width: inherit;
+"></textarea>
+<br>
+Mid: <textarea name="blurb_mid" style="
+width: inherit;
+"></textarea>
+<br>
+Bot: <textarea name="blurb_bot" style="
+width: inherit;
+"></textarea>
+<hr>
+Ticket category: <input name="ticket_category" style="
+float: right;
+margin-bottom: 10px;
+">
+<hr style="
+clear: both;
+">
+Ticket number format: <input name="ticket_format" style="
+float: right;
+margin-bottom: 10px;
+">
+<hr style="
+clear: both;
+">
+Number of tickets to be generated: <input name="numTic" style="
+float: right;
+margin-bottom: 10px;
+">
+<hr style="
+clear: both;
+">
+Email address to which tickets should be sent: <input name="email" style="
+width: 335px;
+">
+<input type="submit" value="Submit"></form>
         </body>
         </html>""")
 

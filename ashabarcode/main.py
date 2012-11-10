@@ -24,6 +24,7 @@ import base64
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from google.appengine.api import mail
+from google.appengine.ext.webapp import blobstore_handlers
 
 import barcode
 
@@ -213,6 +214,7 @@ class TicketHandler(webapp2.RequestHandler):
             Thank you. 
             """)
         self.response.out.write("</body></html>")
+
 ######################################################################
 ## Photo uploader and retriever begin
 ######################################################################

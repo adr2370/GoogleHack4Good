@@ -23,21 +23,14 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>Scanner</title>
     </head>
     <body>
         <div>
-            <div style="
-                position: absolute;
-                left: 31px;
-                top: 28px;
-                font-size: 30px;
-                ">
-                <button id="scan-button" style="font-size:26px;">Scan Something</button>
-                <p>Barcode: <span id="barcode">n/a</span>
-                <p>Response: <span id="errorCode">n/a</span>
+            <div style="width:250px; margin-left:auto; margin-right:auto; margin-top:100px; font-size: 30px;">
+                <button id="scan-button" style="font-size:30px;">Scan Ticket</button>
+                <p>Response:<br/><span id="errorCode">n/a</span>
             </div>
-            
         </div>
         <script type="text/javascript" src="cordova-2.1.0.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
@@ -97,7 +90,6 @@
                 
                 return Cordova.exec(success, fail, "BarcodeScanner", "encode", [{type: type, data: data, options: options}]);
             }
-            console.log("END");
             
             BarcodeScanner.prototype.setup = function(types) {
                 return Cordova.exec("BarcodeScanner.setup", types);
@@ -111,14 +103,12 @@
             barcodeScanned = document.getElementById("barcode");
             errorCode = document.getElementById("errorCode");
             scanButton.addEventListener("click", clickScan, false);
-            createButton.addEventListener("click", clickCreate, false);
             
             function clickScan() {
                 window.plugins.barcodeScanner.scan(scannerSuccess, scannerFailure);
             }
             function scannerSuccess(result) {
                 console.log("scannerSuccess: result: " + result);
-                barcodeScanned.innerText = result.text;
                 errorCode.innerText = "Waiting for server...";
                 var url = "http://ashabarcode.appspot.com/submitBarcode.html",
                 params = "barcode="+result.text,
@@ -141,7 +131,7 @@
                     }
                 };
                 xmlhttp.send(params);
-                var xmlHttpTimeout=setTimeout(ajaxTimeout,5000);
+                var xmlHttpTimeout=setTimeout(ajaxTimeout,10000);
                 function ajaxTimeout() {
                     xmlhttp.abort();
                     errorCode.innerText="Could not reach the server.";

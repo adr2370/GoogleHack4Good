@@ -38,7 +38,7 @@ var app = {
     scan: function() {
         window.plugins.barcodeScanner.scan( function(result) {
 			errorCode.innerText = "Waiting for server...";
-                var url = "http://ashabarcode.appspot.com/submitBarcode.html?barcode="+result.text,
+                var url = "http://ashabarcode.appspot.com/submitBarcode.html?barcode="+result.text.replace(/\s/g,""),
                 result;
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.open("GET",url,true);
@@ -61,7 +61,11 @@ var app = {
                         } else if(result=="<html><body>1</body></html>") {
                             errorCode.innerText="TICKET INVALID. TICKET DOES NOT EXIST IN DATABASE";
                         } else {
-                            errorCode.innerText="TICKET INVALID. TICKET HAS BEEN USED at "+result;
+                        	var timeCode=result.replace("<html><body>","");
+                        	timeCode=timeCode.replace("</body></html>","");
+                        	timeCode=timeCode.split("\.")[0];
+                        	var splitTimes=timeCode.split(" ");
+                            errorCode.innerText="TICKET INVALID. TICKET HAS BEEN USED ON "+splitTimes[0]+" AT "+splitTimes[1];
                         }
                     }
                 };
@@ -69,7 +73,7 @@ var app = {
                 var xmlHttpTimeout=setTimeout(ajaxTimeout,10000);
                 function ajaxTimeout() {
                     xmlhttp.abort();
-                    //errorCode.innerText="Could not reach the server.";
+                    errorCode.innerText="Could not reach the server.";
                 }
         }, function(error) {
         });

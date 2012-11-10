@@ -35,8 +35,8 @@ class TicketCheckingHandler(webapp2.RequestHandler):
     def get(self):
         self.response.headers.add_header("Access-Control-Allow-Origin", "*")
 
-        barcode = int(self.request.get('barcode'))
-        ticket = Ticket.get_by_id(barcode)
+        barcode = self.request.get('barcode')
+        ticket = Ticket.get_by_key_name(barcode)
 
         self.response.out.write('<html><body>')
         if not ticket:
@@ -65,7 +65,7 @@ class MainHandler(webapp2.RequestHandler):
         for ticket in tickets:
             self.response.write(
                     '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
-                    (ticket.email, ticket.key().id(), ticket.used, ticket.time))
+                    (ticket.email, ticket.key().name(), ticket.used, ticket.time))
         self.response.write('</table>')
 
         self.response.out.write("""<html><body>
@@ -201,9 +201,9 @@ class TicketHandler(webapp2.RequestHandler):
 
         #seat numbers not implemented
         for i in range (numTickets):
-            ticketNum = self.genTicketNum(numDigits,leading,trailing,rand)
-            Ticket(id=ticketNum, email=email, used=False).put()
-            self.sendEmail(email, str(ticketNum))
+            ticketNum = str(self.genTicketNum(numDigits,leading,trailing,rand))
+            Ticket(key_name=ticketNum, email=email, used=False).put()
+            self.sendEmail(email, ticketNum)
 
         self.response.write("<html><body>hello</body></html>")
         self.response.out.write("""
@@ -212,8 +212,46 @@ class TicketHandler(webapp2.RequestHandler):
             Thank you. 
             """)
         self.response.out.write("</body></html>")
-
+######################################################################
+## Photo uploader and retriever begin
+######################################################################
+ 
+class BackgroundPhoto(db.Model):
+    name = db.StringProperty()
+    blob_key = blobstore.BlobReferenceProperty()
+ 
+class PhotoUploadFormHandler(webapp2.RequestHandler):
+    def get(self):
+        upload_url = blobstore.create_upload_url('/upload')
+        self.response.out.write('<html><body>');
+        self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
+        self.response.out.write('''Upload File: <input type="file" name="file"><br> <input type="submit"
+        name="submit" value="Submit"> </form></body></html>''')
+ 
+class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+    def post(self):
+        try:
+            fileName = self.get_uploads()[0]
+            upload = self.get_uploads()[1]
+            user_photo = UserPhoto(name = fileName,
+                                   blob_key=upload.key())
+            db.put(user_photo)
+        except:
+            self.redirect('/upload_failure.html')
+ 
+class PhotoObtainer():
+    def get(self, resource):
+        resource = str(urllib.unquote(resource))
+        blob_info = blobstore.BlobInfo.get(resource)
+        return blob_info
+ 
+######################################################################
+## Photo uploader and retriever end
+######################################################################
+ 
 app = webapp2.WSGIApplication([('/', MainHandler),
     ('/submitBarcode.html', TicketCheckingHandler),
+    ('/upload', PhotoUploadHandler),
+    ('/background', PhotoUploadFormHandler),
     ('/sign', TicketHandler)], 
     debug=True)

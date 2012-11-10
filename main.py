@@ -29,41 +29,28 @@ class Ticket(db.Model):
 class TicketCheckingHandler(webapp2.RequestHandler):
     def get(self):
         barcode = self.request.get('barcode')
-        tickets = db.GqlQuery("SELECT * FROM Ticket WHERE TICKET_NUMBER=%s" % 
+        tickets = db.GqlQuery("SELECT * FROM Ticket WHERE ticket_number = %s" % 
                 barcode)
 
-        self.response.write('<html><body>')
+        self.response.out.write('<html><body>')
         tickets = [ticket for ticket in tickets]
         if not tickets:
             # empty query
-            self.response.write('0')
+            self.response.out.write('0')
 
         else:
             ticket = tickets[0]
             if not ticket.used:
                 ticket.time = datetime.datetime.now()
-                self.response.write('1')
+                self.response.out.write('1')
 
             else:
-                self.response.write(ticket.time) 
-        self.response.write('</body></html>')
+                self.response.out.write(ticket.time) 
+        self.response.out.write('</body></html>')
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('<html><body>')
-        tickets = db.GqlQuery("")
-
-        if not tickets:
-            return
-
-        self.response.write('<table>')
-        for ticket in tickets:
-            self.response.write(
-                    '<tr><td>%s</td><td>%s</td></tr>' % 
-                    (ticket.email, ticket.ticket_number))
-        self.response.write('</table>')
-
-        self.response.out.write("""
+        self.response.out.write("""<html><body>
         <form action="/add" method="post">
         Background picture: <input type="file" name="picture">
         <hr>

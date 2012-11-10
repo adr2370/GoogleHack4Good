@@ -69,94 +69,59 @@ class MainHandler(webapp2.RequestHandler):
         self.response.write('</table>')
 
         self.response.out.write("""<html><body>
-        <form action="/sign" method="get" style="
-        width: 400px;
-        margin-left: auto;
-        margin-right: auto;
-        ">
- Background picture: <input type="file" name="picture">
- <hr>
- Custom text blurb:
- <br>
- Top Text: <textarea name="blurb_top" style="
- width: inherit;
- "></textarea>
- <br>
- Middle Text: <textarea name="blurb_mid" style="
- width: inherit;
- "></textarea>
- <br>
- Bottom Text: <textarea name="blurb_bot" style="
- width: inherit;
- "></textarea>
- <hr>
- Ticket category: <input name="ticket_category" style="
- float: right;
- margin-bottom: 10px;
- "><hr style="
- clear: both;
- ">Number of Digits: <input name="numberDigits" style="
- float: right;
- margin-bottom: 10px;
- "><hr style="
- clear: both;
- ">Leading Digits: <input name="leadingDigits" style="
- float: right;
- margin-bottom: 10px;
- ">
- <hr style="
- clear: both;
- ">Trailing Digits: <input name="trailingDigits" style="
- float: right;
- margin-bottom: 10px;
- ">
- 
- <hr style="
- clear: both;
- ">
- Random Barcodes: <input type="checkbox" name="checkRandom" style="float:right; margin-bottom:10px;">
- <hr style="clear:both;">
- 
- 
- Number of tickets to be generated: <input name="numTic" style="
- float: right;
-        margin-bottom: 10px;
-        ">
-        <hr style="
-        clear: both;
-        ">
-        Email address to which tickets should be sent: <input name="email" style="
-        width: 335px;
-        ">
-        <input type="submit" value="Submit"></form></body>
+        <form action="/add" method="post">
+        Background picture: <input type="file" name="picture">
+        <hr>
+        Custom text blurb:
+        <br>
+        Top: <input name="blurb_top">
+        <br>
+        Mid: <input name="blurb_mid">
+        <br>
+        Bot: <input name="blurb_bot">
+        <hr>
+        Ticket category: <input name="ticket_category">
+        <hr>
+        Ticket number format: <input name="ticket_format">
+        <hr>
+        Number of tickets to be generated: <input name="num_tickets">
+        <hr>
+        Email address to which tickets should be sent: <input name="email">
+        <input type="submit" value="Submit"></form>
+        </body>
         </html>""")
 
 class TicketHandler(webapp2.RequestHandler):
-    def genTicketNum(self, numDigits, leading, trailing, rand):
+    def genTicketNum(self, eventNumber):
         #expect event number to be 2 digits
         #query database for event information based on event number
-        n = int(leading)
-        m = int(trailing)
-        p = int(numDigits)
-        nn = len(leading)
-        mm = len(trailing)
-        if nn+mm > p:
+        n = 3 #get from database
+        nn = 0
+        if n!=0:
+            nn = 1 # get from database
+        m = 2 #get from database
+        mm = 1 #get from database
+        p = 6 #get from database
+        max = 999 #get from database
+        rand = False; #get from database
+        if n+m > p:
             raise Exception("Snakes everywhere!!")
+        elif max > 10**(p-n-m+1)-1:
+            raise Exception("I'm tired of snakes!!")
         ticketNum = 0
         if rand:
             while True:
-                ticketNum = n
-                digitsLeft=p-mm-nn
-                for i in range(digitsLeft):
-                    ticketNum = ticketNum*10+random.randint(0,9)
-                ticketNum = ticketNum*10**mm+m
+                ticketNum = nn*10**(p-n)
+                randNum = 0
+                for i in range(p-m-n):
+                    randNum = random.randint(0,9)+randNum*10
+                ticketNum = randNum*10**m
+                ticketNum = ticketNum+mm
                 if not Ticket.get_by_id(ticketNum):
                     break
         else:
-            if Ticket.all().count(1):
-                currMax = Ticket.all().order('-key').get().key().id() + 1*10**mm
-            else:
-                currMax = n*10**(p-nn)+m
+            ticketNum = nn*10**(p-n)
+            currMax = Ticket.all().order('-key').get().key().id() + 1*10**m
             ticketNum = currMax
         return ticketNum
 
@@ -192,16 +157,13 @@ class TicketHandler(webapp2.RequestHandler):
             message.send()
 
     def get(self):
-        numDigits = cgi.escape(self.request.get('numberDigits'))
-        leading = cgi.escape(self.request.get('leadingDigits'))
-        trailing = cgi.escape(self.request.get('trailingDigits'))
-        rand = cgi.escape(self.request.get('checkRandom'))
+        eventNumber = cgi.escape(self.request.get('eventNum'))
         numTickets = int(cgi.escape(self.request.get('numTic')))
         email = cgi.escape(self.request.get('email'))
 
         #seat numbers not implemented
         for i in range (numTickets):
-            ticketNum = self.genTicketNum(numDigits,leading,trailing,rand)
+            ticketNum = self.genTicketNum(eventNumber)
             Ticket(id=ticketNum, email=email, used=False).put()
             self.sendEmail(email, str(ticketNum))
 

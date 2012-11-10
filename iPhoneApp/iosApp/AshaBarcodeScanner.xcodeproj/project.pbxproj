@@ -42,6 +42,7 @@
 		30A0434914DC770100060A13 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30A0434614DC770100060A13 /* Localizable.strings */; };
 		30E1352710E2C1420031B30D /* Cordova.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30E1352610E2C1420031B30D /* Cordova.plist */; };
 		30E5649213A7FCAF007403D8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E5649113A7FCAF007403D8 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		452557B0164E8DA400ED92D3 /* icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 452557AF164E8DA400ED92D3 /* icon-72@2x.png */; };
 		45C4E3051633501400D5C3D2 /* CDVBarcodeScanner.mm in Sources */ = {isa = PBXBuildFile; fileRef = 45C4E2D51633501400D5C3D2 /* CDVBarcodeScanner.mm */; };
 		45C4E32A1633501400D5C3D2 /* zxing-all-in-one.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45C4E2FF1633501400D5C3D2 /* zxing-all-in-one.cpp */; };
 		45C4E32C163353A500D5C3D2 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45C4E32B163353A500D5C3D2 /* AssetsLibrary.framework */; };
@@ -108,6 +109,7 @@
 		30E1352610E2C1420031B30D /* Cordova.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Cordova.plist; path = ../Cordova.plist; sourceTree = "<group>"; };
 		30E5649113A7FCAF007403D8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* AshaBarcodeScanner-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AshaBarcodeScanner-Prefix.pch"; sourceTree = "<group>"; };
+		452557AF164E8DA400ED92D3 /* icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-72@2x.png"; sourceTree = "<group>"; };
 		45C4E2D51633501400D5C3D2 /* CDVBarcodeScanner.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CDVBarcodeScanner.mm; path = ../BarcodeScanner/CDVBarcodeScanner.mm; sourceTree = "<group>"; };
 		45C4E2FF1633501400D5C3D2 /* zxing-all-in-one.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "zxing-all-in-one.cpp"; path = "../BarcodeScanner/zxing-all-in-one.cpp"; sourceTree = "<group>"; };
 		45C4E3001633501400D5C3D2 /* zxing-all-in-one.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "zxing-all-in-one.h"; path = "../BarcodeScanner/zxing-all-in-one.h"; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				452557AF164E8DA400ED92D3 /* icon-72@2x.png */,
 				301BF56E109A69640062928A /* www */,
 				301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -402,6 +405,7 @@
 				3088BBC1154F3926009F9C59 /* Default@2x~iphone.png in Resources */,
 				3088BBC2154F3926009F9C59 /* Default~iphone.png in Resources */,
 				45D38CCD16336EDA008E54EE /* BarcodeOverlay.xib in Resources */,
+				452557B0164E8DA400ED92D3 /* icon-72@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

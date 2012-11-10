@@ -27,89 +27,29 @@
     </head>
     <body>
         <div>
-            <div style="width:250px; margin-left:auto; margin-right:auto; margin-top:100px; font-size: 30px;">
-                <button id="scan-button" style="font-size:30px;">Scan Ticket</button>
+            <div style="width:300px; margin-left:auto; margin-right:auto; margin-top:100px; font-size: 50px;">
+                <button id="scan-button" style="font-size:50px;">Scan Ticket</button>
                 <p>Response:<br/><span id="errorCode">n/a</span>
             </div>
         </div>
         <script type="text/javascript" src="cordova-2.1.0.js"></script>
+        <script type="text/javascript" src="js/barcodescanner.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
-            var BarcodeScanner = function() {
-            }
-            
-            //-------------------------------------------------------------------
-            BarcodeScanner.Encode = {
-                TEXT_TYPE:     "TEXT_TYPE",
-                EMAIL_TYPE:    "EMAIL_TYPE",
-                PHONE_TYPE:    "PHONE_TYPE",
-                SMS_TYPE:      "SMS_TYPE",
-                CONTACT_TYPE:  "CONTACT_TYPE",
-                LOCATION_TYPE: "LOCATION_TYPE"
-            }
-            
-            //-------------------------------------------------------------------
-            BarcodeScanner.prototype.scan = function(success, fail, options) {
-                
-                function successWrapper(result) {
-                    result.cancelled = (result.cancelled == 1);
-                    success.call(null, result);
-                }
-                
-                if (!fail) { fail = function() {}}
-                
-                if (typeof fail != "function")  {
-                    console.log("BarcodeScanner.scan failure: failure parameter not a function");
-                    return;
-                }
-                
-                if (typeof success != "function") {
-                    fail("success callback parameter must be a function");
-                    return;
-                }
-                
-                if ( null == options )
-                options = [];
-                
-                return Cordova.exec(successWrapper, fail, "BarcodeScanner", "scan", options);
-            }
-            
-            //-------------------------------------------------------------------
-            BarcodeScanner.prototype.encode = function(type, data, success, fail, options) {
-                if (!fail) { fail = function() {}}
-                
-                if (typeof fail != "function")  {
-                    console.log("BarcodeScanner.scan failure: failure parameter not a function");
-                    return;
-                }
-                
-                if (typeof success != "function") {
-                    fail("success callback parameter must be a function");
-                    return;
-                }
-                
-                return Cordova.exec(success, fail, "BarcodeScanner", "encode", [{type: type, data: data, options: options}]);
-            }
-            
-            BarcodeScanner.prototype.setup = function(types) {
-                return Cordova.exec("BarcodeScanner.setup", types);
-            };
-            
-            //Keep at bottom but remove the addConstructor for Cordova 2+
-            if(!window.plugins) window.plugins = {};
-            window.plugins.barcodeScanner = new BarcodeScanner();
             
             scanButton = document.getElementById("scan-button");
             barcodeScanned = document.getElementById("barcode");
             errorCode = document.getElementById("errorCode");
-            scanButton.addEventListener("click", clickScan, false);
+            test = document.getElementById("test");
+            scanButton.addEventListener("touchend", clickScan, false);
             
             function clickScan() {
+            	errorCode.innerText = window.plugins.barcodeScanner;
                 window.plugins.barcodeScanner.scan(scannerSuccess, scannerFailure);
             }
             function scannerSuccess(result) {
                 console.log("scannerSuccess: result: " + result);
-                errorCode.innerText = result.text;
+                errorCode.innerText = "Waiting for server...";
                 var url = "http://ashabarcode.appspot.com/submitBarcode.html",
                 params = "barcode="+result.text,
                 result;
@@ -134,7 +74,7 @@
                 var xmlHttpTimeout=setTimeout(ajaxTimeout,10000);
                 function ajaxTimeout() {
                     xmlhttp.abort();
-                    //errorCode.innerText="Could not reach the server.";
+                    errorCode.innerText="Could not reach the server.";
                 }
             }
             function scannerFailure(message) {

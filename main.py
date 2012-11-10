@@ -19,6 +19,7 @@ import cgi
 import urllib
 import datetime
 from google.appengine.ext import db
+from google.appengine.api import mail
 
 class Ticket(db.Model):
     email = db.EmailProperty()
@@ -29,8 +30,7 @@ class Ticket(db.Model):
 class TicketCheckingHandler(webapp2.RequestHandler):
     def get(self):
         barcode = self.request.get('barcode')
-        tickets = db.GqlQuery("SELECT * FROM Ticket WHERE ticket_number = %s" % 
-                barcode)
+        tickets = db.GqlQuery("SELECT * FROM Ticket WHERE ticket_number = %s" % barcode)
 
         self.response.out.write('<html><body>')
         tickets = [ticket for ticket in tickets]
@@ -80,7 +80,56 @@ class Add(webapp2.RequestHandler):
         Ticket(email=email, ticket_number=ticket_number).put()
         self.redirect('/')
 
+class RUNSHIT(webapp2.RequestHandler):
+	def genTicketNum(self, eventNumber): pass
+		#query database for event information based on event number
+		
+	def storeTicket(self,ticketNumber): pass
+		#push it into database under same event number
+	def genBarcode(self, ticketNumber): pass
+		#generate barcode.
+		#query database for event information based on event number
+	def sendEmail(self, ticketNum, email): 
+		if not mail.is_email_valid(email): 
+			self.response.write("<html><body>hello</body></html>")
+			#prompt user to enter a valid address
+		else:
+			sender = "jihuang92@gmail.com" #query database?
+			eventNum = 1024 #query
+			#fileName = ticketNum + ".gif"
+			#subject =  "Your registration for event #" + eventNum + " has been confirmed."
+			subject = "hello"
+			body = """
+				bla bla bla
+				
+				"""
+			#attachments = [(filename, fileInfo)]
+			mail.send_mail(sender, email, subject, body)
+			self.response.write("<html><body>hello</body></html>")
+	
+		#send the damned email
+	def get(self):
+		eventNumber = cgi.escape(self.request.get('eventNum'))
+		numTickets = int(cgi.escape(self.request.get('numTic')))
+		email = cgi.escape(self.request.get('email'))
+		
+		
+		#seat numbers not implemented
+		for i in range (numTickets):
+			ticketNum = self.genTicketNum(eventNumber)
+			self.genBarcode(ticketNum)
+			self.storeTicket(ticketNum)
+		self.response.write("<html><body>hello</body></html>")
+		self.sendEmail(1045, email)
+		self.response.out.write("""
+			<html><body>Your ticket request has been approved.<br>
+			Please check your email for a printable ticket. <br>
+			Thank you. 
+			""")
+		self.response.out.write("</body></html>")
+
 app = webapp2.WSGIApplication([('/', MainHandler),
     ('/add', Add),
-    ('/submitBarcode.html', TicketCheckingHandler)], 
+    ('/submitBarcode.html', TicketCheckingHandler),
+	('/sign', RUNSHIT)], 
     debug=True)

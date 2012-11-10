@@ -227,19 +227,20 @@ class PhotoUploadFormHandler(webapp2.RequestHandler):
         upload_url = blobstore.create_upload_url('/upload')
         self.response.out.write('<html><body>');
         self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
-        self.response.out.write('''Upload File: <input type="file" name="file"><br> <input type="submit"
+        self.response.out.write('''Upload File: <input type="text" name="name"><input type="file" name="file"><br> <input type="submit"
         name="submit" value="Submit"> </form></body></html>''')
  
 class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
         try:
-            fileName = self.get_uploads()[0]
-            upload = self.get_uploads()[1]
-            user_photo = UserPhoto(name = fileName,
+            fileName = self.request.get('name')
+            upload = self.get_uploads()[0]
+            user_photo = BackgroundPhoto(name = fileName,
                                    blob_key=upload.key())
             db.put(user_photo)
         except:
-            self.redirect('/upload_failure.html')
+            print(self.get_uploads()[0])
+            print(self.get_uploads()[1])
  
 class PhotoObtainer():
     def get(self, resource):

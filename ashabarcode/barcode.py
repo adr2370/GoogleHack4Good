@@ -2,6 +2,7 @@ import sys
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import main
 import urllib2
 import StringIO
 
@@ -18,27 +19,24 @@ def centerAlign(picWidth, text, tinyfont):
    w, h = draw.textsize(text)
    return (W-w)/2
 
-def generate(codeNum, date):
+def generate(codeNum, date, imageName = "template2"):
 #get the barcode online
    linkPrefix = "http://www.barcodesinc.com/generator/image.php?code="
    linkSuffix = "&style=197&type=C128B&width=300&height=100&xres=1&font=3"
-#   linkPrefix = "http://generator.onbarcode.com/linear.aspx?TYPE=7&DATA="
-#   linkSuffix = "&UOM=0&X=1&Y=60&LEFT-MARGIN=0&RIGHT-MARGIN=0&TOP-MARGIN=\
-#0&BOTTOM-MARGIN=0&RESOLUTION=150&ROTATE=0&BARCODE-WIDTH=0&BARCODE-HEIGHT=0&SHOW-TEXT=\
-#true&TEXT-FONT=Arial%7c9%7cRegular&TextMargin=6&FORMAT=gif&PROCESS-TILDE=false"
    u = urllib2.urlopen(linkPrefix + codeNum + linkSuffix)
    data = u.read()
    fileImg = StringIO.StringIO(data)
    img = Image.open(fileImg)
-#   bar = EanBarCode()
-#   img= code128_image(codeNum)
    font = ImageFont.truetype("DejaVuSans.ttf",45)
    smallfont = ImageFont.truetype("DejaVuSans.ttf",20)
    tinyfont = ImageFont.truetype("DejaVuSans.ttf",15)
    medianfont = ImageFont.truetype("DejaVuSans.ttf",40)
    img_w,img_h=img.size
-#   img = img.resize((img_w*2, img_h*2))
-   background = Image.new('RGBA', (1440,900), (255, 255, 255, 255))
+   img = img.resize((img_w*2, img_h*2))
+   fileImg = StringIO.StringIO(main.PhotoObtainer.get(imageName))
+   background = Image.open(fileImg)
+   background.resize((1440, 900));
+   #background = Image.new('RGBA', (1440,900), (255, 255, 255, 255))
    bg_w,bg_h=background.size
    blackBanner = Image.new('RGBA', (1440, 80), (0,0,0,0))
    blueBanner = Image.new('RGB', (1440 - 2 * (bg_w - img_w)/5, 80), (30,144,255))

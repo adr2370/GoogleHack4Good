@@ -16,17 +16,15 @@
 #
 import webapp2
 import cgi
-import urllib
 import datetime
 import random
 import StringIO
 import base64
-from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from google.appengine.api import mail
-from google.appengine.ext.webapp import blobstore_handlers
 
 import barcode
+import photoupload
 
 class Ticket(db.Model):
     email = db.EmailProperty()
@@ -57,26 +55,26 @@ class TicketCheckingHandler(webapp2.RequestHandler):
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('<html><body>')
-        tickets = db.GqlQuery("SELECT * FROM Ticket")
-
-        if not tickets:
-            return
-
-        self.response.write('<table>')
-        for ticket in tickets:
-            self.response.write(
-                    '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
-                    (ticket.email, ticket.key().name(), ticket.activated, ticket.time))
-        self.response.write('</table>')
-
         self.response.out.write("""<html><body>
+        <img src="http://www.ashanet.org/graphics/asha_logo.png" style="
+        width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        ">
         <form action="/sign" method="get" style="
         width: 400px;
         margin-left: auto;
         margin-right: auto;
         ">
- Background picture: <input type="file" name="picture">
+ Background picture:
+ <select name="picture" style="float: right;">
+ """)
+        for photo in photoupload.BackgroundPhoto.all():
+            self.response.out.write("<option value=%s>%s</option>" % (photo.key().name(), photo.key().name()))
+
+        self.response.out.write("""
+        </select>
  <hr>
  Custom text blurb: <textarea name="blurb" style="
  width: inherit;
@@ -150,7 +148,7 @@ class TicketHandler(webapp2.RequestHandler):
                     ticket.key().name().endswith(trailing)
                     and len(ticket.key().name()) == p]
             if tickets:
-                ticketNum = max(tickets) + 10 ** mm
+                ticketNum = max(ticket_nums) + 10 ** mm
             else:
                 ticketNum = n
                 digitsLeft=p-mm-nn
@@ -164,20 +162,19 @@ class TicketHandler(webapp2.RequestHandler):
             #prompt user to enter a valid address
         else:
             message = mail.EmailMessage(sender="Ji Huang <jihuang92@gmail.com>",
-                    subject="Your account has been approved")
+                    subject="Your Asha for Education ticket purchase was successful!")
 
             message.to = email
 
             message.body = """
-            Dear Albert:
+            Hello, 
 
-            Your example.com account has been approved.  You can now visit
-            http://www.example.com/ and sign in using your Google Account to
-            access new features.
-
-            Please let us know if you have any questions.
-
-            The example.com Team
+            Your request for a ticket with Asha for Education has been approved. 
+            Please print the attached ticket and bring it with you to the event. 
+            
+            Thank you.
+            
+            Asha for Education
             """
 
             # Generate image string
@@ -214,47 +211,9 @@ class TicketHandler(webapp2.RequestHandler):
             </body></html>
             """)
 
-######################################################################
-## Photo uploader and retriever begin
-######################################################################
- 
-class BackgroundPhoto(db.Model):
-    name = db.StringProperty()
-    blob_key = blobstore.BlobReferenceProperty()
- 
-class PhotoUploadFormHandler(webapp2.RequestHandler):
-    def get(self):
-        upload_url = blobstore.create_upload_url('/upload')
-        self.response.out.write('<html><body>');
-        self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
-        self.response.out.write('''Upload File: <input type="text" name="name"><input type="file" name="file"><br> <input type="submit"
-        name="submit" value="Submit"> </form></body></html>''')
- 
-class PhotoUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
-    def post(self):
-        try:
-            fileName = self.request.get('name')
-            upload = self.get_uploads()[0]
-            user_photo = BackgroundPhoto(name = fileName,
-                                   blob_key=upload.key())
-            db.put(user_photo)
-        except:
-            print(self.get_uploads()[0])
-            print(self.get_uploads()[1])
- 
-class PhotoObtainer():
-    def get(self, resource):
-        resource = str(urllib.unquote(resource))
-        blob_info = blobstore.BlobInfo.get(resource)
-        return blob_info
- 
-######################################################################
-## Photo uploader and retriever end
-######################################################################
- 
 app = webapp2.WSGIApplication([('/', MainHandler),
     ('/submitBarcode.html', TicketCheckingHandler),
-    ('/upload', PhotoUploadHandler),
-    ('/background', PhotoUploadFormHandler),
+    ('/upload', photoupload.PhotoUploadHandler),
+    ('/background', photoupload.PhotoUploadFormHandler),
     ('/sign', TicketHandler)], 
     debug=True)

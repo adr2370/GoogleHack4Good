@@ -6,6 +6,8 @@ import main
 import urllib2
 import StringIO
 
+import photoupload
+
 def test():
    """ Execute all tests """
    testWithChecksum()
@@ -33,8 +35,9 @@ def generate(codeNum, date, imageName = "template2"):
    medianfont = ImageFont.truetype("DejaVuSans.ttf",40)
    img_w,img_h=img.size
    img = img.resize((img_w*2, img_h*2))
-   fileImg = StringIO.StringIO(main.PhotoObtainer.get(imageName))
+   fileImg = StringIO.StringIO(photoupload.getPhoto(imageName))
    background = Image.open(fileImg)
+   #background = Image.open(photoupload.getPhoto(imageName))
    background.resize((1440, 900));
    #background = Image.new('RGBA', (1440,900), (255, 255, 255, 255))
    bg_w,bg_h=background.size
@@ -78,21 +81,21 @@ will be banned from entering the ground."""
    
    draw = ImageDraw.Draw(background)
    draw.text( offsetBannerText ,"THIS IS YOUR ELECTRONIC TICKET. DUPLICATION PROHIBITED",
-             (255,255,255),font=font)
+             fill = "white" ,font = font)
    draw.text( offsetPleasePrint,"""PLEASE PRINT THIS PAGE AND BRING IT WITH YOU FOR ENTRANCE TO"""
               """ASHA STANDFORD HOLI 2012""",
-             (0,0,0),smallfont)
-   draw.text( offsetBlueBannerText,date,(0,0,0),medianfont)
-   draw.text( offsetFirstStatement ,firstStatement ,(0,0,0),tinyfont)
-   draw.text( offsetSecondStatement ,secondStatement ,(0,0,0),tinyfont)
-   draw.text( offsetThirdStatement ,thirdStatement ,(0,0,0),tinyfont)
-   draw.text( offsetFourthStatement ,fourthStatement ,(0,0,0),tinyfont)
-   draw.text( offsetFifthStatement ,fifthStatement,(0,0,0),tinyfont)
-   draw.text( offsetSixthStatement ,sixthStatement ,(0,0,0),tinyfont)
-   draw.text( offsetSeventhStatement ,seventhStatement ,(0,0,0),tinyfont)
-   draw.text( offsetEighthStatement ,eighthStatement ,(0,0,0),tinyfont)
-   draw.text( offsetNinethStatement ,ninethStatement ,(0,0,0),tinyfont)
-   #draw.text( offsetCodeNum,codeNum,(0,0,0),medianfont)
+             fill = "black" , font = smallfont)
+   draw.text( offsetBlueBannerText,date, "black",medianfont)
+   draw.text( offsetFirstStatement ,firstStatement ,"black",tinyfont)
+   draw.text( offsetSecondStatement ,secondStatement ,"black",tinyfont)
+   draw.text( offsetThirdStatement ,thirdStatement ,"black",tinyfont)
+   draw.text( offsetFourthStatement ,fourthStatement ,"black",tinyfont)
+   draw.text( offsetFifthStatement ,fifthStatement,"black",tinyfont)
+   draw.text( offsetSixthStatement ,sixthStatement ,"black",tinyfont)
+   draw.text( offsetSeventhStatement ,seventhStatement ,"black",tinyfont)
+   draw.text( offsetEighthStatement ,eighthStatement ,"black",tinyfont)
+   draw.text( offsetNinethStatement ,ninethStatement ,"black",tinyfont)
+   #draw.text( offsetCodeNum,codeNum,"black",medianfont)
 #  background.save('out.png')
    return background;
 

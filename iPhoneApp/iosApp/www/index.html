@@ -109,7 +109,7 @@
             }
             function scannerSuccess(result) {
                 console.log("scannerSuccess: result: " + result);
-                errorCode.innerText = "Waiting for server...";
+                errorCode.innerText = result.text;
                 var url = "http://ashabarcode.appspot.com/submitBarcode.html",
                 params = "barcode="+result.text,
                 result;
@@ -134,7 +134,7 @@
                 var xmlHttpTimeout=setTimeout(ajaxTimeout,10000);
                 function ajaxTimeout() {
                     xmlhttp.abort();
-                    errorCode.innerText="Could not reach the server.";
+                    //errorCode.innerText="Could not reach the server.";
                 }
             }
             function scannerFailure(message) {

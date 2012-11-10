@@ -17,24 +17,48 @@
 import webapp2
 import cgi
 import urllib
+import datetime
 from google.appengine.ext import db
 
 class Ticket(db.Model):
     email = db.EmailProperty()
     ticket_number = db.StringProperty()
+    used = db.BooleanProperty()
+    time = db.DateTimeProperty()
+
+class TicketCheckingHandler(webapp2.RequestHandler):
+    def get(self):
+        barcode = self.request.get('barcode')
+        tickets = db.GqlQuery("SELECT * FROM Ticket WHERE TICKET_NUMBER=%s" % 
+                barcode)
+
+        self.response.write('<html><body>')
+        tickets = [ticket for ticket in tickets]
+        if not tickets:
+            # empty query
+            self.response.write('0')
+
+        else:
+            ticket = tickets[0]
+            if not ticket.used:
+                ticket.time = datetime.datetime.now()
+                self.response.write('1')
+
+            else:
+                self.response.write(ticket.time) 
+        self.response.write('</body></html>')
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('<html><body>')
-        tickets = db.GqlQuery("SELECT * "
-                "FROM Ticket ")
+        tickets = db.GqlQuery("")
 
         if not tickets:
             return
 
         self.response.write('<table>')
         for ticket in tickets:
-            self.response.out.write(
+            self.response.write(
                     '<tr><td>%s</td><td>%s</td></tr>' % 
                     (ticket.email, ticket.ticket_number))
         self.response.write('</table>')
@@ -44,11 +68,11 @@ class MainHandler(webapp2.RequestHandler):
         Background picture: <input type="file" name="picture">
         <hr>
         Custom text blurb:
-        </br>
+        <br>
         Top: <input name="blurb_top">
-        </br>
+        <br>
         Mid: <input name="blurb_mid">
-        </br>
+        <br>
         Bot: <input name="blurb_bot">
         <hr>
         Ticket category: <input name="ticket_category">
@@ -70,5 +94,6 @@ class Add(webapp2.RequestHandler):
         self.redirect('/')
 
 app = webapp2.WSGIApplication([('/', MainHandler),
-    ('/add', Add)], 
+    ('/add', Add),
+    ('/submitBarcode.html', TicketCheckingHandler)], 
     debug=True)

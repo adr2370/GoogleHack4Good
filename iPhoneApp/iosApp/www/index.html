@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Hello World</title>
+    </head>
+    <body>
+        <div>
+            <div style="
+                position: absolute;
+                left: 31px;
+                top: 28px;
+                font-size: 30px;
+                ">
+                <button id="scan-button" style="font-size:26px;">Scan Something</button>
+                <p>Barcode: <span id="barcode">n/a</span>
+                <p>Response: <span id="errorCode">n/a</span>
+            </div>
+            
+        </div>
+        <script type="text/javascript" src="cordova-2.1.0.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            var BarcodeScanner = function() {
+            }
+            
+            //-------------------------------------------------------------------
+            BarcodeScanner.Encode = {
+                TEXT_TYPE:     "TEXT_TYPE",
+                EMAIL_TYPE:    "EMAIL_TYPE",
+                PHONE_TYPE:    "PHONE_TYPE",
+                SMS_TYPE:      "SMS_TYPE",
+                CONTACT_TYPE:  "CONTACT_TYPE",
+                LOCATION_TYPE: "LOCATION_TYPE"
+            }
+            
+            //-------------------------------------------------------------------
+            BarcodeScanner.prototype.scan = function(success, fail, options) {
+                
+                function successWrapper(result) {
+                    result.cancelled = (result.cancelled == 1);
+                    success.call(null, result);
+                }
+                
+                if (!fail) { fail = function() {}}
+                
+                if (typeof fail != "function")  {
+                    console.log("BarcodeScanner.scan failure: failure parameter not a function");
+                    return;
+                }
+                
+                if (typeof success != "function") {
+                    fail("success callback parameter must be a function");
+                    return;
+                }
+                
+                if ( null == options )
+                options = [];
+                
+                return Cordova.exec(successWrapper, fail, "BarcodeScanner", "scan", options);
+            }
+            
+            //-------------------------------------------------------------------
+            BarcodeScanner.prototype.encode = function(type, data, success, fail, options) {
+                if (!fail) { fail = function() {}}
+                
+                if (typeof fail != "function")  {
+                    console.log("BarcodeScanner.scan failure: failure parameter not a function");
+                    return;
+                }
+                
+                if (typeof success != "function") {
+                    fail("success callback parameter must be a function");
+                    return;
+                }
+                
+                return Cordova.exec(success, fail, "BarcodeScanner", "encode", [{type: type, data: data, options: options}]);
+            }
+            console.log("END");
+            
+            BarcodeScanner.prototype.setup = function(types) {
+                return Cordova.exec("BarcodeScanner.setup", types);
+            };
+            
+            //Keep at bottom but remove the addConstructor for Cordova 2+
+            if(!window.plugins) window.plugins = {};
+            window.plugins.barcodeScanner = new BarcodeScanner();
+            
+            scanButton = document.getElementById("scan-button");
+            barcodeScanned = document.getElementById("barcode");
+            errorCode = document.getElementById("errorCode");
+            scanButton.addEventListener("click", clickScan, false);
+            createButton.addEventListener("click", clickCreate, false);
+            
+            function clickScan() {
+                window.plugins.barcodeScanner.scan(scannerSuccess, scannerFailure);
+            }
+            function scannerSuccess(result) {
+                console.log("scannerSuccess: result: " + result);
+                barcodeScanned.innerText = result.text;
+                errorCode.innerText = "Waiting for server...";
+                var url = "http://ashabarcode.appspot.com/submitBarcode.html",
+                params = "barcode="+result.text,
+                result;
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.open("POST",url,true);
+                xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                xmlhttp.onreadystatechange = function(){
+                    if(xmlhttp.readyState == 4 && xmlhttp.status == 200)
+                    {
+                        result = xmlhttp.responseText;
+                        console.log(result);
+                        if(result==0) {
+                            errorCode.innerText="VALID. ADMIT ONE";
+                        } else if(result==1) {
+                            errorCode.innerText="TICKET INVALID. TICKET DOES NOT EXIST IN DATABASE";
+                        } else {
+                            errorCode.innerText="TICKET INVALID. TICKET HAS BEEN USED at "+result;
+                        }
+                    }
+                };
+                xmlhttp.send(params);
+                var xmlHttpTimeout=setTimeout(ajaxTimeout,5000);
+                function ajaxTimeout() {
+                    xmlhttp.abort();
+                    errorCode.innerText="Could not reach the server.";
+                }
+            }
+            function scannerFailure(message) {
+                console.log("scannerFailure: message: " + message)
+                resultSpan.innerText = "failure: " + JSON.stringify(message)
+            }
+		    </script>
+    </body>
+</html>

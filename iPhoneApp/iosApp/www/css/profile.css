@@ -1,0 +1,77 @@
+#infotable{
+  margin-left: 1em;
+}
+#infotable .infolabel{
+  font-weight: bold;
+}
+.list-routine li{
+  height: 50px;
+  line-height: 50px;
+  padding-left: 50px;
+  background-position: 0px center;
+  background-repeat: no-repeat;
+  list-syle: none;
+}
+.list-routine{
+  list-style: none;
+}
+.form-inline{
+  display: inline;
+}
+#stattable tbody tr td{
+  width: 3em;
+}
+.topname {
+	font-size: 5em;
+	line-height: 2em;
+	text-align: center;
+}
+.toprow {
+	min-height: 138px;
+}
+.fbpic {
+	min-height: 180px;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.toplinks {
+	display: inline-block;
+	padding-right: 10px;
+	font-size:13px;
+}
+.toptable {
+	text-align: center;
+}
+.toptablerow {
+	height: 2em;
+	font-size: 3em;
+}
+.toptablenextrow {
+	height: 2em;
+	font-size: 1em;
+}
+.firstcolumn {
+	background-color: #F6CEEC;
+}
+.secondcolumn {
+	background-color: #F5F6CE;
+}
+.thirdcolumn {
+	background-color: #E0ECF8;
+}
+.fourthcolumn {
+	background-color: #F2E0F7;
+}
+.border {
+	border: dashed 1px;
+	margin-top: 0.75em;
+}
+.bigtitle {
+	background-image: url('http://i.imgur.com/1kkX0.png');
+	font-size: 20px;
+	padding: 1em 0em;
+	text-indent: 1em;
+}
+.statuswell {
+	margin: 0.5em;
+}

@@ -1,0 +1,26 @@
+.row-fluid .span3 a {
+	min-width: 180px;
+	min-height: 180px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	line-height: 180px;
+	color: #ffffff;
+	text-align: center;
+	font-size: 0px;
+}
+.row-fluid .span3 a:hover {
+	font-size: 2em;
+}
+.topquestion {
+	font-size: 4em;
+	line-height: 2em;
+	text-align: center;
+}
+.questionrow {
+	min-height:138px;
+}
+.profilepic {
+	font-size:36px;
+	line-height:110%;
+}

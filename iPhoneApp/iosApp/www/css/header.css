@@ -1,0 +1,53 @@
+
+.well {
+	margin-bottom: 0px;  
+}
+.nav {
+	font-size:15px;
+	padding-top:14px;
+}
+.fbmodal {
+	padding-top:100px;
+	padding-bottom:100px;
+}
+.fb-login-button {
+	padding-left:190px;
+}
+.typeahead.dropdown-menu {
+	overflow: hidden;
+}
+
+
+/******* Rina Stylesheet *******/
+
+#indexWrapper{
+    width: 600px;
+    margin: 250px auto 0;
+}
+.welcomeMsg{
+    float: left;
+    font-size: 12px;
+    padding: 12px;
+    width: 404px;
+}
+.fbLogin{
+    float: right;
+    width: 322px;
+    margin-top: 2px;
+}
+.loginButton{
+    background: none repeat scroll 0 0 #0E385F;
+    border: 1px solid #DDDDDD;
+    margin-top: -3px;
+	margin-left: 385px;
+    padding: 10px;
+    width: 260px;
+    float: left;
+    font-size: 25px;
+	text-align: center;
+}
+
+#loginSpan{
+color: #fff;
+cursor: pointer;
+}

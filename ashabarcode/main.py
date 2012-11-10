@@ -21,6 +21,7 @@ import datetime
 import random
 import StringIO
 import base64
+from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from google.appengine.api import mail
 

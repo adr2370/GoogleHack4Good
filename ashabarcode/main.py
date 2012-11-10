@@ -155,11 +155,18 @@ class TicketHandler(webapp2.RequestHandler):
                 if not Ticket.get_by_id(ticketNum):
                     break
         else:
-            if Ticket.all().count(1):
-                currMax = Ticket.all().order('-key').get().key().id() + 1*10**mm
+            tickets = [ticket for ticket in Ticket.all() if 
+                    ticket.key().name().startswith(leading) and 
+                    ticket.key().name().endswith(trailing)
+                    and len(ticket.key().name()) == p]
+            if tickets:
+                max_ticket = max(tickets, key=lambda t: t.key().name()).key().name()
+                ticketNum = int(max_ticket) + 10 ** mm
             else:
-                currMax = n*10**(p-nn)+m
-            ticketNum = currMax
+                ticketNum = n
+                digitsLeft=p-mm-nn
+                ticketNum = ticketNum*10**digitsLeft
+                ticketNum = ticketNum*10**mm+m
         return ticketNum
 
     def sendEmail(self, email, ticketNum): 

@@ -145,13 +145,12 @@ class TicketHandler(webapp2.RequestHandler):
                 if not Ticket.get_by_id(ticketNum):
                     break
         else:
-            tickets = [ticket for ticket in Ticket.all() if 
+            ticket_nums = [int(ticket.key().name()) for ticket in Ticket.all() if 
                     ticket.key().name().startswith(leading) and 
                     ticket.key().name().endswith(trailing)
                     and len(ticket.key().name()) == p]
             if tickets:
-                max_ticket = max(tickets, key=lambda t: t.key().name()).key().name()
-                ticketNum = int(max_ticket) + 10 ** mm
+                ticketNum = max(tickets) + 10 ** mm
             else:
                 ticketNum = n
                 digitsLeft=p-mm-nn

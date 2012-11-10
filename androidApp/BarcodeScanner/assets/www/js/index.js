@@ -38,32 +38,49 @@ var app = {
     scan: function() {
         window.plugins.barcodeScanner.scan( function(result) {
 			errorCode.innerText = result.text;
-            var url = "http://ashabarcode.appspot.com/submitBarcode.html",
-            params = "barcode="+result.text,
-            result;
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("POST",url,true);
-            xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            xmlhttp.onreadystatechange = function(){
-                if(xmlhttp.readyState == 4 && xmlhttp.status == 200)
-                {
-                    result = xmlhttp.responseText;
-                    console.log(result);
-                    if(result==0) {
-                        errorCode.innerText="VALID. ADMIT ONE";
-                    } else if(result==1) {
-                        errorCode.innerText="TICKET INVALID. TICKET DOES NOT EXIST IN DATABASE";
-                    } else {
-                        errorCode.innerText="TICKET INVALID. TICKET HAS BEEN USED at "+result;
+                var url = "http://ashabarcode.appspot.com/submitBarcode.html",
+                params = "barcode="+result.text,
+                result;
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.open("POST",url,true);
+                xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                xmlhttp.onreadystatechange = function(){
+                    if(xmlhttp.readyState == 4 && xmlhttp.status == 200)
+                    {
+                        result = xmlhttp.responseText;
+                        console.log(result);
+                        if(result==0) {
+                            var soFar=parseInt(window.localStorage.getItem("numAdmited"));
+                            if(window.localStorage.getItem("numAdmited")===null) {
+                                window.localStorage.setItem("numAdmited",1);
+                                document.getElementById("numPeople").innerText=1;
+                            } else {
+                                window.localStorage.setItem("numAdmited",soFar+1);
+                                document.getElementById("numPeople").innerText=soFar+1;
+                            }
+                            errorCode.innerText="VALID. ADMIT ONE";
+                        } else if(result==1) {
+                            errorCode.innerText="TICKET INVALID. TICKET DOES NOT EXIST IN DATABASE";
+                        } else {
+                            errorCode.innerText="TICKET INVALID. TICKET HAS BEEN USED at "+result;
+                        }
                     }
+                };
+                xmlhttp.send(params);
+                var xmlHttpTimeout=setTimeout(ajaxTimeout,10000);
+                function ajaxTimeout() {
+                    xmlhttp.abort();
+                    
+                    var soFar=parseInt(window.localStorage.getItem("numAdmited"));
+                    if(window.localStorage.getItem("numAdmited")===null) {
+                        window.localStorage.setItem("numAdmited",1);
+                        document.getElementById("numPeople").innerText=1;
+                    } else {
+                        window.localStorage.setItem("numAdmited",soFar+1);
+                        document.getElementById("numPeople").innerText=soFar+1;
+                    }
+                    //errorCode.innerText="Could not reach the server.";
                 }
-            };
-            xmlhttp.send(params);
-            var xmlHttpTimeout=setTimeout(ajaxTimeout,10000);
-            function ajaxTimeout() {
-                xmlhttp.abort();
-                //errorCode.innerText="Could not reach the server.";
-            }
         }, function(error) {
         });
     },

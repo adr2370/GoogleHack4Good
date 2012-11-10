@@ -27,9 +27,11 @@
     </head>
     <body>
         <div>
-            <div style="width:250px; margin-left:auto; margin-right:auto; margin-top:100px; font-size: 30px;">
+            <div style="width:250px; margin-left:auto; margin-right:auto; margin-top:50px; font-size: 30px;">
                 <button id="scan-button" style="font-size:30px;">Scan Ticket</button>
-                <p>Response:<br/><span id="errorCode">n/a</span>
+                <p>Response: <span id="errorCode"></span></p>
+                <p>Admitted: <span id="numPeople">0</span><p>
+                <button id="resetButton" style="font-size:30px;">Reset</button>
             </div>
         </div>
         <script type="text/javascript" src="cordova-2.1.0.js"></script>
@@ -104,6 +106,19 @@
             errorCode = document.getElementById("errorCode");
             scanButton.addEventListener("click", clickScan, false);
             
+            resetButton = document.getElementById("resetButton");
+            resetButton.addEventListener("click", clearPeople, false);
+            var soFar=parseInt(window.localStorage.getItem("numAdmited"));
+            if(window.localStorage.getItem("numAdmited")===null) {
+                document.getElementById("numPeople").innerText=0;
+            } else {
+                document.getElementById("numPeople").innerText=soFar;
+            }
+            function clearPeople() {
+                window.localStorage.clear();
+                document.getElementById("numPeople").innerText=0;
+            }
+            
             function clickScan() {
                 window.plugins.barcodeScanner.scan(scannerSuccess, scannerFailure);
             }
@@ -122,6 +137,14 @@
                         result = xmlhttp.responseText;
                         console.log(result);
                         if(result==0) {
+                            var soFar=parseInt(window.localStorage.getItem("numAdmited"));
+                            if(window.localStorage.getItem("numAdmited")===null) {
+                                window.localStorage.setItem("numAdmited",1);
+                                document.getElementById("numPeople").innerText=1;
+                            } else {
+                                window.localStorage.setItem("numAdmited",soFar+1);
+                                document.getElementById("numPeople").innerText=soFar+1;
+                            }
                             errorCode.innerText="VALID. ADMIT ONE";
                         } else if(result==1) {
                             errorCode.innerText="TICKET INVALID. TICKET DOES NOT EXIST IN DATABASE";

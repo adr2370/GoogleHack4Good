@@ -67,7 +67,7 @@ class MainHandler(webapp2.RequestHandler):
                     '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
                     (ticket.email, ticket.key().id(), ticket.used, ticket.time))
         self.response.write('</table>')
-        
+
         self.response.out.write("""<html><body>
         <form action="/add" method="post">
         Background picture: <input type="file" name="picture">
@@ -91,17 +91,39 @@ class MainHandler(webapp2.RequestHandler):
         </body>
         </html>""")
 
-class Add(webapp2.RequestHandler):
-    def post(self):
-        email = self.request.get('email')
-        ticket_number = self.request.get('ticket_number')
-        Ticket(email=email, ticket_number=ticket_number).put()
-        self.redirect('/')
-
 class TicketHandler(webapp2.RequestHandler):
     def genTicketNum(self, eventNumber):
+        #expect event number to be 2 digits
         #query database for event information based on event number
-        return random.randint(0, 999999)
+        n = 3 #get from database
+        nn = 0
+        if n!=0:
+            nn = 1 # get from database
+        m = 2 #get from database
+        mm = 1 #get from database
+        p = 6 #get from database
+        max = 999 #get from database
+        rand = False; #get from database
+        if n+m > p:
+            raise Exception("Snakes everywhere!!")
+        elif max > 10**(p-n-m+1)-1:
+            raise Exception("I'm tired of snakes!!")
+        ticketNum = 0
+        if rand:
+            while True:
+                ticketNum = nn*10**(p-n)
+                randNum = 0
+                for i in range(p-m-n):
+                    randNum = random.randint(0,9)+randNum*10
+                ticketNum = randNum*10**m
+                ticketNum = ticketNum+mm
+                if not Ticket.get_by_id(ticketNum):
+                    break
+        else:
+            ticketNum = nn*10**(p-n)
+            currMax = Ticket.all().order('-key').get().key().id() + 1*10**m
+            ticketNum = currMax
+        return ticketNum
 
     def sendEmail(self, email, ticketNum): 
         if not mail.is_email_valid(email): 
@@ -109,7 +131,7 @@ class TicketHandler(webapp2.RequestHandler):
             #prompt user to enter a valid address
         else:
             message = mail.EmailMessage(sender="Ji Huang <jihuang92@gmail.com>",
-                            subject="Your account has been approved")
+                    subject="Your account has been approved")
 
             message.to = email
 
@@ -154,7 +176,6 @@ class TicketHandler(webapp2.RequestHandler):
         self.response.out.write("</body></html>")
 
 app = webapp2.WSGIApplication([('/', MainHandler),
-    ('/add', Add),
     ('/submitBarcode.html', TicketCheckingHandler),
     ('/sign', TicketHandler)], 
     debug=True)

@@ -157,7 +157,7 @@ class TicketHandler(webapp2.RequestHandler):
                 ticketNum = ticketNum*10**mm+m
         return ticketNum
 
-    def sendEmail(self, email, ticketNum, blurb): 
+    def sendEmail(self, email, ticketNum, blurb, imageName): 
         if not mail.is_email_valid(email): 
             self.response.write("<html><body>hello</body></html>")
             #prompt user to enter a valid address
@@ -179,7 +179,7 @@ class TicketHandler(webapp2.RequestHandler):
             """
 
             # Generate image string
-            x = barcode.generate(ticketNum, blurb)
+            x = barcode.generate(ticketNum, blurb, imageName)
             output = StringIO.StringIO()
             x.save(output, "PNG")
             message.attachments = [('ticket.png', output.getvalue())]
@@ -195,12 +195,13 @@ class TicketHandler(webapp2.RequestHandler):
         numTickets = int(cgi.escape(self.request.get('numTic')))
         email = cgi.escape(self.request.get('email'))
         blurb = cgi.escape(self.request.get('blurb'))
+        imageName = cgi.escape(self.request.get('picture'))
 
         #seat numbers not implemented
         for i in range (numTickets):
             ticketNum = str(self.genTicketNum(numDigits,leading,trailing,rand))
             Ticket(key_name=ticketNum, email=email, activated=False).put()
-            self.sendEmail(email, ticketNum, blurb)
+            self.sendEmail(email, ticketNum, blurb, imageName)
 
         self.response.out.write("""
             <html><body>Your ticket request has been approved.<br>

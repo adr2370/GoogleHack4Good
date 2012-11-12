@@ -162,7 +162,7 @@ class TicketHandler(webapp2.RequestHandler):
             self.response.write("<html><body>hello</body></html>")
             #prompt user to enter a valid address
         else:
-            message = mail.EmailMessage(sender="Ji Huang <jihuang92@gmail.com>",
+            message = mail.EmailMessage(sender="John Cleese <johncleese@montypython.com>",
                     subject="Your Asha for Education ticket purchase was successful!")
 
             message.to = email
